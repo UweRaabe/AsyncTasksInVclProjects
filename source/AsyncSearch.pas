@@ -40,6 +40,7 @@ type
   strict protected
     procedure AddFiles(const AFiles: TArray<string>); virtual;
     procedure BeginSearch; virtual;
+    function CheckCancelled: Boolean;
     procedure EndSearch; virtual;
     procedure Execute(ACancel: ICancel); overload; virtual;
   public
@@ -76,14 +77,14 @@ end;
 
 procedure TSearch.AddFiles(const AFiles: TArray<string>);
 begin
-  if Cancelled then Exit;
+  if CheckCancelled then Exit;
   if Length(AFiles) = 0 then Exit;
   FTarget.AddFiles(AFiles);
 end;
 
 procedure TSearch.BeginSearch;
 begin
-  if Cancelled then Exit;
+  if CheckCancelled then Exit;
   FTarget.BeginSearch;
 end;
 
@@ -92,9 +93,16 @@ begin
   FCancelled := True;
 end;
 
+function TSearch.CheckCancelled: Boolean;
+begin
+  Result := FCancelled;
+  if Result then
+    FTarget := nil;
+end;
+
 procedure TSearch.EndSearch;
 begin
-  if Cancelled then Exit;
+  if CheckCancelled then Exit;
   FTarget.EndSearch;
 end;
 
