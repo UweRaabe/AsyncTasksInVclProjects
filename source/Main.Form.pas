@@ -71,9 +71,7 @@ begin
   dspFiles.Items.Count := Files.Count;
   StatusBar.SimpleText := Format('%d files found', [Files.Count]);
   if Files.Count >= 10000 then begin
-    if Search <> nil then
-      Search.Cancel;
-    EndSearch;  // When Cancelled the final EndSearch is not called from the search
+    EndSearch;  // cancels search and releases interface
   end;
 end;
 
@@ -100,6 +98,7 @@ end;
 
 procedure TSearchForm.StartSearch;
 begin
+  { cancel and release any active search }
   Search := nil;
   StatusBar.SimpleText := '';
   dspFiles.Clear;
@@ -136,6 +135,7 @@ end;
 
 procedure TSearchForm.EndSearch;
 begin
+  Search := nil; // cancel and release interface when search is complete or interrupted
   StatusBar.SimpleText := Format('%d files found (%d ms)', [Files.Count, FStopwatch.ElapsedMilliseconds]);
   dspFiles.Cursor := crDefault;
 end;
