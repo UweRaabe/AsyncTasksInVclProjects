@@ -25,8 +25,7 @@ type
     private
       FSearch: TSearch;
     strict protected
-      procedure Cancel;
-      function IsCancelled: Boolean;
+      property Search: TSearch read FSearch implements ICancel;
     public
       constructor Create(ASearch: TSearch);
       destructor Destroy; override;
@@ -36,6 +35,7 @@ type
     FPath: string;
     FSearchPattern: string;
     FTarget: ISearchTarget;
+    function IsCancelled: Boolean;
     procedure SearchFolder(const APath, ASearchPattern: string);
   strict protected
     procedure AddFiles(const AFiles: TArray<string>); virtual;
@@ -120,6 +120,11 @@ begin
   Execute;
 end;
 
+function TSearch.IsCancelled: Boolean;
+begin
+  Result := FCancelled;
+end;
+
 procedure TSearch.SearchFolder(const APath, ASearchPattern: string);
 var
   arr: TArray<string>;
@@ -172,16 +177,6 @@ destructor TSearch.TCancel.Destroy;
 begin
   FSearch.Free;
   inherited Destroy;
-end;
-
-procedure TSearch.TCancel.Cancel;
-begin
-  FSearch.Cancel;
-end;
-
-function TSearch.TCancel.IsCancelled: Boolean;
-begin
-  Result := FSearch.Cancelled;
 end;
 
 end.
